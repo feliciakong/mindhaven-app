@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { auth, signOutUser } from './lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { LandingPage } from './components/LandingPage';
 import { Dashboard } from './components/Dashboard';
 
@@ -38,7 +38,7 @@ export function App() {
     return <LandingPage />;
   }
 
-  return <Dashboard user={user} onSignOut={signOutUser} />;
+  return <Dashboard user={user} onSignOut={() => signOut(auth)} />;
 }
 
 export default App;
