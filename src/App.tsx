@@ -34,17 +34,11 @@ export default function App() {
 
   // Layout State
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false); 
 
   // Apply dark mode class to html element
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
       document.documentElement.classList.remove('dark');
-    }
   }, [isDarkMode]);
 
   // Firebase Auth listener
