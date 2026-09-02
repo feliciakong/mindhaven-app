@@ -8,11 +8,10 @@ import {
   Copy,
   Check,
   Edit2,
-  Bookmark,
-  Share2,
   Trash2,
-  RefreshCw,
   Compass,
+  Mic,
+  MicOff,
 } from 'lucide-react';
 
 interface ChatWorkspaceProps {
@@ -22,6 +21,7 @@ interface ChatWorkspaceProps {
   onGenerateSummary: () => void;
   isGenerating: boolean;
   onNewSession: () => void;
+  onDeleteEntry?: (entryId: string) => Promise<void>;
 }
 
 const CATEGORIES: ReflectionCategory[] = [
@@ -81,15 +81,18 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
   onGenerateSummary,
   isGenerating,
   onNewSession,
+  onDeleteEntry,
 }) => {
   const [inputText, setInputText] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleText, setTitleText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ReflectionCategory>('General');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (entry) {
@@ -97,10 +100,47 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
     }
   }, [entry]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [entry?.messages, isGenerating]);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+
+    recognition.onresult = (event: any) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        setInputText((prev) => (prev ? `${prev} ${finalTranscript.trim()}` : finalTranscript.trim()));
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   const handleSend = async () => {
     if (!inputText.trim() || isGenerating) return;
@@ -129,6 +169,12 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleDeleteSession = async () => {
+    if (entry && onDeleteEntry && window.confirm('Are you sure you want to delete this reflection entry?')) {
+      await onDeleteEntry(entry.id);
+    }
+  };
+
   if (!entry) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-stone-50/50 dark:bg-stone-950/20">
@@ -154,9 +200,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
 
   return (
     <div className="flex-1 flex flex-col h-[calc(100vh-4rem)] bg-stone-50/30 dark:bg-stone-950/20 overflow-hidden">
-      {/* Workspace Top Bar */}
       <div className="px-4 sm:px-6 py-3 bg-white/70 dark:bg-stone-900/80 border-b border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center justify-between gap-3 backdrop-blur-xs">
-        {/* Title & Editable Input */}
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           {isEditingTitle ? (
             <div className="flex items-center gap-2 flex-1 max-w-md">
@@ -186,7 +230,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
           )}
         </div>
 
-        {/* Mood Selector & AI Insights Trigger */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-stone-400 dark:text-stone-500 font-medium hidden sm:inline">Mood:</span>
@@ -211,10 +254,19 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
             <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>AI Session Insights</span>
           </button>
+
+          {onDeleteEntry && (
+            <button
+              onClick={handleDeleteSession}
+              title="Delete Entry"
+              className="p-1.5 rounded-xl text-stone-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Conversation Thread */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
         {entry.messages.length === 0 ? (
           <div className="max-w-xl mx-auto py-8 text-center space-y-4">
@@ -225,7 +277,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
               How can I support your reflection today?
             </h3>
             <p className="text-stone-500 dark:text-stone-400 text-xs max-w-md mx-auto leading-relaxed">
-              Share what is on your heart, explore a challenge, or select one of the suggested prompts below to initiate your conversation.
+              Share what is on your heart, speak your thoughts, or select a prompt below.
             </p>
           </div>
         ) : (
@@ -237,7 +289,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
                 key={msg.id}
                 className={`flex gap-3 max-w-3xl ${isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}
               >
-                {/* Avatar Icon */}
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs ${
                     isUser
@@ -248,7 +299,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
                   {isUser ? <UserIcon className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                 </div>
 
-                {/* Message Bubble */}
                 <div className="group relative flex flex-col max-w-[85%]">
                   <div
                     className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
@@ -260,7 +310,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
                     <div className="whitespace-pre-wrap break-words font-sans">{msg.text}</div>
                   </div>
 
-                  {/* Timestamp & Copy action */}
                   <div
                     className={`flex items-center gap-2 mt-1 text-[10px] text-stone-400 dark:text-stone-500 px-1 ${
                       isUser ? 'justify-end' : 'justify-start'
@@ -283,7 +332,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
           })
         )}
 
-        {/* Gemini Generating Thinking Indicator */}
         {isGenerating && (
           <div className="flex gap-3 max-w-xl mr-auto">
             <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
@@ -299,7 +347,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Socratic Prompt Inspiration Bar */}
       <div className="px-4 py-2 bg-white/50 dark:bg-stone-900/50 border-t border-stone-200/60 dark:border-stone-800/60">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 flex-shrink-0">
@@ -321,7 +368,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
           ))}
         </div>
 
-        {/* Prompt Chips */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1.5">
           {PRESET_PROMPTS[selectedCategory].map((promptText, idx) => (
             <button
@@ -335,7 +381,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
         </div>
       </div>
 
-      {/* Input Form Bar */}
       <div className="p-4 bg-white dark:bg-stone-900 border-t border-stone-200/80 dark:border-stone-800">
         <div className="max-w-4xl mx-auto flex items-end gap-2 bg-stone-50 dark:bg-stone-800 p-2.5 rounded-2xl border border-stone-200 dark:border-stone-700 focus-within:ring-2 focus-within:ring-emerald-500/50 transition">
           <textarea
@@ -344,14 +389,23 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Write your reflection... (Press Enter to send, Shift+Enter for new line)"
+            placeholder="Write or speak your reflection... (Press Enter to send, Shift+Enter for new line)"
             className="flex-1 bg-transparent border-0 focus:outline-none text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 resize-none font-sans"
           />
 
           <div className="flex items-center gap-2 pb-1">
-            <span className="text-[10px] text-stone-400 hidden sm:inline">
-              {inputText.length} chars
-            </span>
+            <button
+              type="button"
+              onClick={toggleListening}
+              title={isListening ? 'Stop listening' : 'Start voice input'}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
+                isListening
+                  ? 'bg-red-500 text-white animate-pulse'
+                  : 'bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-300 dark:hover:bg-stone-600'
+              }`}
+            >
+              {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            </button>
 
             <button
               id="workspace-send-msg-btn"

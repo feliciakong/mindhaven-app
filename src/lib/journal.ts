@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { 
-  collection, addDoc, query, orderBy, onSnapshot, serverTimestamp 
+  collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc 
 } from 'firebase/firestore';
 
 export interface JournalEntry {
@@ -31,4 +31,17 @@ export async function createJournalEntry(uid: string, entry: Omit<JournalEntry, 
     ...entry,
     createdAt: serverTimestamp()
   });
+}
+
+export async function updateJournalEntry(userId: string, entryId: string, updates: Partial<JournalEntry>) {
+  const entryRef = doc(db, 'users', userId, 'entries', entryId);
+  return await updateDoc(entryRef, {
+    ...updates,
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function deleteJournalEntry(userId: string, entryId: string) {
+  const entryRef = doc(db, 'users', userId, 'entries', entryId);
+  return await deleteDoc(entryRef);
 }

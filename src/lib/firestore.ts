@@ -2,7 +2,6 @@ import {
   collection,
   doc,
   getDocs,
-  getDoc,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -13,10 +12,6 @@ import {
 import { db } from './firebase';
 import { JournalEntry, ChatMessage, SessionInsights } from '../types';
 
-/**
- * Sanitizes an object by removing keys with `undefined` values,
- * which Firestore rejects.
- */
 function sanitizePayload<T extends Record<string, any>>(payload: T): Partial<T> {
   const clean: Record<string, any> = {};
   Object.keys(payload).forEach((key) => {
@@ -27,16 +22,10 @@ function sanitizePayload<T extends Record<string, any>>(payload: T): Partial<T> 
   return clean as Partial<T>;
 }
 
-/**
- * Helper to generate subcollection reference `/users/{userId}/journalEntries`
- */
 const getJournalEntriesRef = (userId: string) => {
   return collection(db, 'users', userId, 'journalEntries');
 };
 
-/**
- * Fetch all journal entries for a given user ordered by createdAt desc
- */
 export async function fetchUserJournalEntries(userId: string): Promise<JournalEntry[]> {
   if (!userId) return [];
   try {
@@ -67,9 +56,6 @@ export async function fetchUserJournalEntries(userId: string): Promise<JournalEn
   }
 }
 
-/**
- * Create a new journal entry under `/users/{userId}/journalEntries/{entryId}`
- */
 export async function createNewJournalEntry(
   userId: string,
   initialUserMessage?: string,
@@ -78,7 +64,7 @@ export async function createNewJournalEntry(
   if (!userId) throw new Error('User ID is required');
 
   const entriesRef = getJournalEntriesRef(userId);
-  const newDocRef = doc(entriesRef); // Auto-generated ID
+  const newDocRef = doc(entriesRef);
 
   const now = new Date().toISOString();
   const initialMessages: ChatMessage[] = initialUserMessage
@@ -92,7 +78,6 @@ export async function createNewJournalEntry(
       ]
     : [];
 
-  // Generate an auto title from the initial message or default
   const title = initialUserMessage
     ? initialUserMessage.slice(0, 35) + (initialUserMessage.length > 35 ? '...' : '')
     : 'New Reflection Session';
@@ -120,9 +105,6 @@ export async function createNewJournalEntry(
   return entryData;
 }
 
-/**
- * Save updated messages array and timestamps for a journal entry
- */
 export async function saveJournalMessages(
   userId: string,
   entryId: string,
@@ -135,7 +117,6 @@ export async function saveJournalMessages(
   const docRef = doc(db, 'users', userId, 'journalEntries', entryId);
   const now = new Date().toISOString();
 
-  // If title was still default, update title based on first user message
   const firstUserMsg = messages.find((m) => m.sender === 'user');
   let titleUpdate: string | undefined;
   if (firstUserMsg && firstUserMsg.text) {
@@ -155,9 +136,6 @@ export async function saveJournalMessages(
   await updateDoc(docRef, sanitizePayload(updates));
 }
 
-/**
- * Update title or mood or tags of a journal entry
- */
 export async function updateJournalEntryMeta(
   userId: string,
   entryId: string,
@@ -178,9 +156,6 @@ export async function updateJournalEntryMeta(
   );
 }
 
-/**
- * Delete a journal entry document from Firestore
- */
 export async function deleteJournalEntry(userId: string, entryId: string): Promise<void> {
   if (!userId || !entryId) return;
   const docRef = doc(db, 'users', userId, 'journalEntries', entryId);
