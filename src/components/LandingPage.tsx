@@ -2,7 +2,7 @@ import React from 'react';
 import { signInWithGoogle } from '../lib/firebase';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
-export default function LandingPage() {
+export function LandingPage() {
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#2D2B2A] flex flex-col justify-between p-6 md:p-12">
       {/* Header */}
