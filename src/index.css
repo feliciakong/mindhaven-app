@@ -1,15 +1,9 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  color-scheme: light !important;
-}
-html, body {
-  background-color: #FBF9F5 !important;
-  color: #1c1917 !important;
-}
-
-/* Force warm stone/cream background globally */
 html, body, #root {
-  background-color: #fcfbf7 !important;
-  color: #1c1917 !important;
+  background-color: #FAF6F0;
+  color: #2D2B2A;
+  min-height: 100vh;
 }
