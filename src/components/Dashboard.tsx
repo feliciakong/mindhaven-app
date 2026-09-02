@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Sparkles, Plus, Shield, Search, LogOut, BookOpen, 
-  Heart, Lock, Mic, Calendar, User as UserIcon
+  Heart, Lock, Mic
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -58,7 +58,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
             </span>
           </div>
 
-          {/* Action Button */}
+          {/* New Entry Action Button */}
           <button style={{
             width: '100%',
             display: 'flex',
@@ -80,7 +80,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
             <span>New Reflection Session</span>
           </button>
 
-          {/* UID Security Badge */}
+          {/* Security Badge */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -98,7 +98,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
             <span>UID Multi-Tenant Isolated</span>
           </div>
 
-          {/* Nav Items */}
+          {/* Navigation Items */}
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <button style={{
               display: 'flex',
@@ -119,7 +119,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </nav>
         </div>
 
-        {/* User Profile Footer Card */}
+        {/* User Profile Card */}
         <div style={{
           backgroundColor: '#F4FAFA',
           borderRadius: '12px',
@@ -181,7 +181,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         overflowY: 'auto',
         boxSizing: 'border-box'
       }}>
-        {/* Top Search & Filter Bar */}
+        {/* Search Header */}
         <div style={{ marginBottom: '28px' }}>
           <h1 style={{ fontSize: '26px', fontWeight: '800', color: '#0B2B2C', marginBottom: '16px' }}>
             Journal Entries
@@ -217,7 +217,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
             </div>
           </div>
 
-          {/* Mood Filter Pills */}
+          {/* Filter Chips */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {filters.map((filter) => (
               <button
@@ -242,7 +242,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </div>
         </div>
 
-        {/* Security Banner */}
+        {/* Security Alert Banner */}
         <div style={{
           backgroundColor: '#E6F2F2',
           border: '1px solid #BCE0E0',
@@ -261,7 +261,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </span>
         </div>
 
-        {/* Hero Welcome Box */}
+        {/* Action Panel */}
         <div style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '20px',
