@@ -4,48 +4,137 @@ import { Sparkles, ArrowRight, BookOpen, ShieldCheck, HeartPulse } from 'lucide-
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col justify-between p-4 md:p-8 selection:bg-teal-100 bg-gradient-to-b from-sky-100 to-emerald-50">
-      {/* Navigation Header */}
-      <header className="max-w-6xl w-full mx-auto flex items-center justify-between bg-white/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/60 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-teal-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #E6F2F2 0%, #EEF6F0 100%)',
+      color: '#0F2C2C',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      padding: '24px 16px',
+      boxSizing: 'border-box'
+    }}>
+      {/* Header */}
+      <header style={{
+        maxWidth: '1000px',
+        width: '100%',
+        margin: '0 auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        padding: '12px 24px',
+        borderRadius: '50px',
+        border: '1px solid #D1E5E5',
+        boxShadow: '0 4px 15px rgba(15, 44, 44, 0.05)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            backgroundColor: '#0F5257',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF'
+          }}>
             <Sparkles size={18} />
           </div>
-          <span className="text-lg font-bold tracking-tight text-teal-950">MindHaven</span>
+          <span style={{ fontSize: '18px', fontWeight: '700', color: '#0F2C2C', letterSpacing: '-0.3px' }}>
+            MindHaven
+          </span>
         </div>
 
         <button
           onClick={signInWithGoogle}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-teal-800 hover:bg-teal-900 text-white text-xs font-semibold tracking-wide transition-all shadow-sm"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 20px',
+            borderRadius: '50px',
+            backgroundColor: '#0F5257',
+            color: '#FFFFFF',
+            border: 'none',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(15, 82, 87, 0.2)'
+          }}
         >
           <span>Sign In with Google</span>
           <ArrowRight size={14} />
         </button>
       </header>
 
-      {/* Hero Section */}
-      <main className="max-w-4xl mx-auto text-center my-auto py-10 px-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-100/80 border border-teal-200/60 text-teal-900 text-xs font-semibold mb-6 shadow-sm">
-          <Sparkles size={14} className="text-teal-700" />
+      {/* Hero Body */}
+      <main style={{
+        maxWidth: '720px',
+        width: '100%',
+        margin: '40px auto',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 16px',
+          borderRadius: '50px',
+          backgroundColor: '#D8ECEC',
+          border: '1px solid #BCE0E0',
+          color: '#0B4347',
+          fontSize: '12px',
+          fontWeight: '600',
+          marginBottom: '24px'
+        }}>
+          <Sparkles size={14} color="#0F5257" />
           <span>MindHaven • Your Trusted Reflection Companion</span>
         </div>
 
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-teal-950 leading-tight mb-4">
+        <h1 style={{
+          fontSize: '38px',
+          fontWeight: '800',
+          lineHeight: '1.25',
+          color: '#0B2B2C',
+          marginBottom: '16px',
+          letterSpacing: '-0.5px'
+        }}>
           A quiet space for your thoughts, guided by intuitive AI.
         </h1>
 
-        <p className="text-sm md:text-base text-teal-900/70 max-w-2xl mx-auto leading-relaxed mb-8">
+        <p style={{
+          fontSize: '16px',
+          lineHeight: '1.6',
+          color: '#3B5E5F',
+          maxWidth: '580px',
+          margin: '0 auto 32px auto'
+        }}>
           MindHaven combines continuous Socratic reflection with private cloud storage, 
           transforming daily thoughts into meaningful self-discoveries and actionable clarity.
         </p>
 
-        {/* CTA Button */}
-        <div className="flex justify-center mb-10">
+        {/* Action Button */}
+        <div style={{ marginBottom: '40px' }}>
           <button
             onClick={signInWithGoogle}
-            className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '14px 28px',
+              borderRadius: '50px',
+              backgroundColor: '#007A5E',
+              color: '#FFFFFF',
+              border: 'none',
+              fontSize: '15px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(0, 122, 94, 0.25)',
+              transition: 'transform 0.15s ease'
+            }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" className="fill-current flex-shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" style={{ fill: '#FFFFFF' }}>
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
@@ -55,33 +144,66 @@ export function LandingPage() {
           </button>
         </div>
 
-        {/* Workspace Preview Card */}
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 border border-white/80 shadow-xl max-w-xl mx-auto text-left">
-          <div className="flex items-center justify-between border-b border-teal-100 pb-3 mb-4">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-rose-400" />
-              <div className="w-3 h-3 rounded-full bg-amber-400" />
-              <div className="w-3 h-3 rounded-full bg-emerald-400" />
+        {/* Central Workspace Card */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '20px',
+          padding: '24px',
+          border: '1px solid #D6E8E8',
+          boxShadow: '0 12px 30px rgba(15, 82, 87, 0.08)',
+          textAlign: 'left',
+          maxWidth: '540px',
+          margin: '0 auto'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid #EBF3F3',
+            paddingBottom: '12px',
+            marginBottom: '16px'
+          }}>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FF8A8A' }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FFC764' }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#62D4A4' }} />
             </div>
-            <span className="text-[10px] font-semibold text-teal-800/60 uppercase tracking-wider">MindHaven Workspace</span>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: '#6A8E8F', letterSpacing: '0.5px' }}>
+              MINDHAVEN WORKSPACE
+            </span>
           </div>
 
-          <div className="space-y-3">
-            <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-100/60">
-              <p className="text-xs font-semibold text-teal-900">Today's Reflection</p>
-              <p className="text-xs text-teal-700/80 mt-1">"Taking time to step back helped me organize my goals..."</p>
-            </div>
-            <div className="flex items-center gap-4 pt-1 text-xs text-teal-800/70 font-medium">
-              <span className="flex items-center gap-1"><BookOpen size={14} className="text-teal-600" /> Daily Journal</span>
-              <span className="flex items-center gap-1"><HeartPulse size={14} className="text-teal-600" /> Insights</span>
-              <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-teal-600" /> Private Cloud</span>
-            </div>
+          <div style={{
+            backgroundColor: '#F4FAFA',
+            borderRadius: '12px',
+            padding: '14px 16px',
+            border: '1px solid #E0F0F0',
+            marginBottom: '16px'
+          }}>
+            <p style={{ fontSize: '13px', fontWeight: '700', color: '#0F5257', marginBottom: '4px' }}>
+              Today's Reflection
+            </p>
+            <p style={{ fontSize: '13px', color: '#4A6E6F', fontStyle: 'italic', lineHeight: '1.4' }}>
+              "Taking time to step back helped me organize my goals..."
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '12px', color: '#3B5E5F', fontWeight: '600' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <BookOpen size={15} color="#0F5257" /> Daily Journal
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <HeartPulse size={15} color="#0F5257" /> Insights
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <ShieldCheck size={15} color="#0F5257" /> Private Cloud
+            </span>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="text-center text-xs text-teal-900/50 py-4">
+      <footer style={{ textAlign: 'center', fontSize: '12px', color: '#6A8E8F', padding: '16px 0' }}>
         © MindHaven. Minimalist AI Reflection Sanctuary.
       </footer>
     </div>
