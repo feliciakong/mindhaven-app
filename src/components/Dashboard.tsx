@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, Plus, Shield, Search, LogOut, BookOpen, 
-  Lock, Mic, X, Loader2, Calendar, Tag
+  Lock, Mic, MicOff, X, Loader2, Lightbulb
 } from 'lucide-react';
 import { analyzeReflection } from '../services/aiService';
 import { createJournalEntry, subscribeToUserEntries, JournalEntry } from '../lib/journal';
@@ -26,8 +26,16 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const filters = ['All', 'Reflective', 'Calm', 'Grateful', 'Anxious', 'Inspired', 'Overwhelmed'];
+
+  const microPrompts = [
+    "What made me smile today?",
+    "What am I overthinking right now?",
+    "One victory I had today...",
+    "What do I need to let go of?"
+  ];
 
   useEffect(() => {
     if (!user.uid) return;
@@ -36,6 +44,43 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
     });
     return () => unsubscribe();
   }, [user.uid]);
+
+  // Web Speech API Voice Dictation
+  const toggleVoiceRecording = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      alert("Voice input is not supported in this browser. Please try Chrome, Edge, or Safari.");
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+
+    recognition.onresult = (event: any) => {
+      let currentTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        currentTranscript += event.results[i][0].transcript;
+      }
+      setContent((prev) => (prev ? `${prev} ${currentTranscript}` : currentTranscript));
+    };
+
+    recognition.start();
+  };
+
+  const handlePromptClick = (promptText: string) => {
+    setContent((prev) => prev ? `${prev}\n\n${promptText} ` : `${promptText} `);
+  };
 
   const handleCreateEntry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -296,7 +341,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </div>
         </div>
 
-        {/* Isolation Banner */}
+        {/* Security Banner */}
         <div style={{
           backgroundColor: '#E6F2F2',
           border: '1px solid #BCE0E0',
@@ -326,18 +371,22 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
             maxWidth: '600px',
             margin: '0 auto'
           }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              backgroundColor: '#E0F0F0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 16px auto',
-              color: '#0F5257'
-            }}>
-              <Mic size={22} />
+            <div 
+              onClick={() => setIsModalOpen(true)}
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                backgroundColor: '#E0F0F0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px auto',
+                color: '#0F5257',
+                cursor: 'pointer'
+              }}
+            >
+              <Mic size={26} />
             </div>
 
             <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#0B2B2C', marginBottom: '8px' }}>
@@ -423,7 +472,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </div>
         )}
 
-        {/* Modal Dialog */}
+        {/* Reflection Modal Dialog with Voice & Micro-Prompts */}
         {isModalOpen && (
           <div style={{
             position: 'fixed',
@@ -440,7 +489,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
               backgroundColor: '#FFFFFF',
               borderRadius: '20px',
               width: '100%',
-              maxWidth: '540px',
+              maxWidth: '560px',
               padding: '28px',
               boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
               position: 'relative'
@@ -464,8 +513,36 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                 New Reflection Session
               </h2>
 
+              {/* Micro-prompts bar */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', color: '#0F5257', marginBottom: '8px' }}>
+                  <Lightbulb size={14} color="#007A5E" /> Need inspiration? Try a micro-prompt:
+                </div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {microPrompts.map((prompt, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handlePromptClick(prompt)}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: '600',
+                        backgroundColor: '#EEF8F8',
+                        color: '#0F5257',
+                        border: '1px solid #D1E5E5',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <form onSubmit={handleCreateEntry}>
-                <div style={{ marginBottom: '16px' }}>
+                <div style={{ marginBottom: '14px' }}>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#0F5257', marginBottom: '6px' }}>
                     Title (Optional)
                   </label>
@@ -487,9 +564,34 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#0F5257', marginBottom: '6px' }}>
-                    What's on your mind?
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#0F5257' }}>
+                      What's on your mind?
+                    </label>
+
+                    {/* Voice Dictation Trigger */}
+                    <button
+                      type="button"
+                      onClick={toggleVoiceRecording}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '4px 10px',
+                        borderRadius: '50px',
+                        border: 'none',
+                        backgroundColor: isListening ? '#FF4D4D' : '#E0F0F0',
+                        color: isListening ? '#FFFFFF' : '#0F5257',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {isListening ? <MicOff size={14} /> : <Mic size={14} />}
+                      <span>{isListening ? 'Stop Listening...' : 'Dictate'}</span>
+                    </button>
+                  </div>
+
                   <textarea
                     rows={5}
                     placeholder="Express your thoughts, feelings, or events today..."
