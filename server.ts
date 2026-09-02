@@ -226,6 +226,16 @@ async function setupServer() {
     });
   }
 
+const __dirname = path.resolve();
+
+// Serve static assets from Vite's build output
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Fallback all non-API requests to index.html for React router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
   app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`MindHaven server running on ${PORT}`);
   });
