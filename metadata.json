@@ -1,0 +1,8 @@
+{
+  "name": "MindHaven",
+  "description": "Personal AI reflection journal web application powered by Gemini and Firestore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
