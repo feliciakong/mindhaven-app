@@ -284,7 +284,7 @@ export default function App() {
   // Render Loading Screen during initial Auth check
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex flex-col items-center justify-center p-6 text-stone-700 dark:text-stone-300">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-50 flex flex-col items-center justify-center p-6 text-stone-700 dark:text-stone-300">
         <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="font-serif font-medium text-lg">Opening MindHaven Sanctuary...</p>
       </div>
@@ -298,7 +298,7 @@ export default function App() {
 
   // Main Authenticated Workspace Layout
   return (
-    <div className="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col transition-colors duration-200">
+    <div className="min-h-screen bg-stone-100 dark:bg-stone-50 text-stone-900 dark:text-stone-100 flex flex-col transition-colors duration-200">
       {/* Top Navbar */}
       <Header
         user={user}

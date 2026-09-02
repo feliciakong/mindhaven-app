@@ -9,11 +9,11 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, authError }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/20 to-emerald-50/30 dark:from-stone-950 dark:via-stone-900 dark:to-emerald-950/20 text-stone-800 dark:text-stone-100 flex flex-col justify-between transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/20 to-emerald-50/30 dark:from-stone-950 dark:via-stone-900 dark:to-emerald-950/20 text-stone-800 dark:text-stone-900 flex flex-col justify-between transition-colors duration-300">
       {/* Header Bar */}
       <header className="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-600/20">
+          <div className="w-10 h-10 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-stone-900 flex items-center justify-center shadow-md shadow-emerald-600/20">
             <Feather className="w-5 h-5" />
           </div>
           <div>
@@ -30,7 +30,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
           id="landing-signin-header-btn"
           onClick={onSignIn}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-medium text-sm transition shadow-sm hover:shadow-md cursor-pointer disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-stone-900 font-medium text-sm transition shadow-sm hover:shadow-md cursor-pointer disabled:opacity-60"
         >
           {isLoading ? (
             <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -70,7 +70,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
             id="landing-signin-hero-btn"
             onClick={onSignIn}
             disabled={isLoading}
-            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-semibold text-base transition shadow-lg shadow-emerald-700/20 hover:shadow-emerald-700/30 cursor-pointer disabled:opacity-60 transform active:scale-95"
+            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-stone-900 font-semibold text-base transition shadow-lg shadow-emerald-700/20 hover:shadow-emerald-700/30 cursor-pointer disabled:opacity-60 transform active:scale-95"
           >
             <svg className="w-5 h-5 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
               <path
@@ -96,11 +96,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
 
         {/* Feature Cards Grid */}
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left w-full">
-          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
             <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-4">
               <Brain className="w-5 h-5" />
             </div>
-            <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">
+            <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-900 mb-2">
               Socratic Guidance
             </h3>
             <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
@@ -108,11 +108,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
             <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 flex items-center justify-center mb-4">
               <Compass className="w-5 h-5" />
             </div>
-            <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">
+            <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-900 mb-2">
               Instant Session Insights
             </h3>
             <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
@@ -120,11 +120,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
             <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-400 flex items-center justify-center mb-4">
               <Shield className="w-5 h-5" />
             </div>
-            <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">
+            <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-900 mb-2">
               Isolated Firestore Storage
             </h3>
             <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
