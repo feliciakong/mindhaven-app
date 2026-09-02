@@ -8,17 +8,20 @@ const PORT = process.env.PORT || 8080;
 async function setupServer() {
   const distPath = path.join(process.cwd(), 'dist');
 
-  // If the dist folder exists, serve static assets directly
   if (fs.existsSync(distPath)) {
-    app.use('/assets', express.static(path.join(distPath, 'assets')));
+    // Serve static assets; return 404 if a specific asset file is missing
+    app.use('/assets', express.static(path.join(distPath, 'assets')), (req, res) => {
+      res.status(404).send('Asset not found');
+    });
+
     app.use(express.static(distPath));
 
+    // Fallback only for HTML SPA routes
     app.get('*', (req, res) => {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       res.sendFile(path.join(distPath, 'index.html'));
     });
   } else {
-    // Development mode fallback
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
