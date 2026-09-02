@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, Plus, Shield, Search, LogOut, BookOpen, 
-  Lock, Mic, MicOff, X, Loader2, Lightbulb
+  Lock, Mic, MicOff, X, Loader2, Lightbulb, Calendar
 } from 'lucide-react';
 import { analyzeReflection } from '../services/aiService';
 import { createJournalEntry, subscribeToUserEntries, JournalEntry } from '../lib/journal';
@@ -27,14 +27,16 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [recognitionRef, setRecognitionRef] = useState<any>(null);
 
   const filters = ['All', 'Reflective', 'Calm', 'Grateful', 'Anxious', 'Inspired', 'Overwhelmed'];
 
   const microPrompts = [
-    "What made me smile today?",
-    "What am I overthinking right now?",
-    "One victory I had today...",
-    "What do I need to let go of?"
+    "🌱 What made me feel grounded today?",
+    "⚡ What drained my energy?",
+    "🎯 What is one small win I had?",
+    "💭 What am I overthinking right now?",
+    "🙏 What am I genuinely grateful for?"
   ];
 
   useEffect(() => {
@@ -45,16 +47,34 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
     return () => unsubscribe();
   }, [user.uid]);
 
-  // Web Speech API Voice Dictation
+  // Format Firestore timestamp or Date
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return 'Just now';
+    try {
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'Just now';
+    }
+  };
+
+  // Web Speech API Dictation
   const toggleVoiceRecording = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-      alert("Voice input is not supported in this browser. Please try Chrome, Edge, or Safari.");
+      alert("Voice speech recognition is not supported in this browser. Please use Google Chrome, Edge, or Safari.");
       return;
     }
 
-    if (isListening) {
+    if (isListening && recognitionRef) {
+      recognitionRef.stop();
       setIsListening(false);
       return;
     }
@@ -66,25 +86,40 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
 
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
-
-    recognition.onresult = (event: any) => {
-      let currentTranscript = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        currentTranscript += event.results[i][0].transcript;
-      }
-      setContent((prev) => (prev ? `${prev} ${currentTranscript}` : currentTranscript));
+    recognition.onerror = (e: any) => {
+      console.error("Speech recognition error:", e);
+      setIsListening(false);
     };
 
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setContent((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    };
+
+    setRecognitionRef(recognition);
     recognition.start();
   };
 
   const handlePromptClick = (promptText: string) => {
-    setContent((prev) => prev ? `${prev}\n\n${promptText} ` : `${promptText} `);
+    setContent((prev) => (prev ? `${prev}\n\n${promptText} ` : `${promptText} `));
+  };
+
+  const openModalWithVoice = () => {
+    setIsModalOpen(true);
+    setTimeout(() => toggleVoiceRecording(), 300);
   };
 
   const handleCreateEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
+
+    if (isListening && recognitionRef) {
+      recognitionRef.stop();
+      setIsListening(false);
+    }
 
     setIsSubmitting(true);
     try {
@@ -371,29 +406,32 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
             maxWidth: '600px',
             margin: '0 auto'
           }}>
-            <div 
-              onClick={() => setIsModalOpen(true)}
+            <button 
+              onClick={openModalWithVoice}
+              title="Click to start voice recording"
               style={{
-                width: '56px',
-                height: '56px',
+                width: '64px',
+                height: '64px',
                 borderRadius: '50%',
                 backgroundColor: '#E0F0F0',
+                border: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 16px auto',
                 color: '#0F5257',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(15, 82, 87, 0.1)'
               }}
             >
-              <Mic size={26} />
-            </div>
+              <Mic size={28} />
+            </button>
 
             <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#0B2B2C', marginBottom: '8px' }}>
               Welcome to Your MindHaven
             </h2>
             <p style={{ fontSize: '14px', color: '#5C7E7F', lineHeight: '1.5', marginBottom: '24px' }}>
-              No entries found. Start a new reflection session to explore your thoughts and receive insights from Gemini AI.
+              No entries found. Start a new reflection session using voice dictation or guided micro-prompts.
             </p>
 
             <button 
@@ -443,6 +481,12 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                     }}>
                       {entry.mood}
                     </span>
+
+                    {/* Timestamp Display */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#6A8E8F' }}>
+                      <Calendar size={12} />
+                      <span>{formatDate(entry.createdAt)}</span>
+                    </div>
                   </div>
 
                   <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0B2B2C', marginBottom: '8px' }}>
@@ -472,7 +516,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </div>
         )}
 
-        {/* Reflection Modal Dialog with Voice & Micro-Prompts */}
+        {/* Reflection Modal Dialog */}
         {isModalOpen && (
           <div style={{
             position: 'fixed',
@@ -495,7 +539,11 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
               position: 'relative'
             }}>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  if (isListening && recognitionRef) recognitionRef.stop();
+                  setIsListening(false);
+                  setIsModalOpen(false);
+                }}
                 style={{
                   position: 'absolute',
                   top: '20px',
@@ -513,10 +561,10 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                 New Reflection Session
               </h2>
 
-              {/* Micro-prompts bar */}
+              {/* Guided Micro-prompts */}
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', color: '#0F5257', marginBottom: '8px' }}>
-                  <Lightbulb size={14} color="#007A5E" /> Need inspiration? Try a micro-prompt:
+                  <Lightbulb size={14} color="#007A5E" /> Guided Micro-Prompts (Click to insert):
                 </div>
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {microPrompts.map((prompt, index) => (
@@ -525,14 +573,15 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                       type="button"
                       onClick={() => handlePromptClick(prompt)}
                       style={{
-                        padding: '5px 10px',
-                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        borderRadius: '8px',
                         fontSize: '11px',
                         fontWeight: '600',
                         backgroundColor: '#EEF8F8',
                         color: '#0F5257',
                         border: '1px solid #D1E5E5',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
                       }}
                     >
                       {prompt}
@@ -569,7 +618,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                       What's on your mind?
                     </label>
 
-                    {/* Voice Dictation Trigger */}
+                    {/* Dictation Button */}
                     <button
                       type="button"
                       onClick={toggleVoiceRecording}
@@ -577,24 +626,25 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '6px',
-                        padding: '4px 10px',
+                        padding: '5px 12px',
                         borderRadius: '50px',
                         border: 'none',
-                        backgroundColor: isListening ? '#FF4D4D' : '#E0F0F0',
+                        backgroundColor: isListening ? '#E53E3E' : '#E0F0F0',
                         color: isListening ? '#FFFFFF' : '#0F5257',
                         fontSize: '12px',
-                        fontWeight: '600',
-                        cursor: 'pointer'
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
                       }}
                     >
                       {isListening ? <MicOff size={14} /> : <Mic size={14} />}
-                      <span>{isListening ? 'Stop Listening...' : 'Dictate'}</span>
+                      <span>{isListening ? 'Listening... (Click to stop)' : 'Voice Dictate'}</span>
                     </button>
                   </div>
 
                   <textarea
                     rows={5}
-                    placeholder="Express your thoughts, feelings, or events today..."
+                    placeholder="Express your thoughts or click a micro-prompt above..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
@@ -614,7 +664,11 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                   <button
                     type="button"
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={() => {
+                      if (isListening && recognitionRef) recognitionRef.stop();
+                      setIsListening(false);
+                      setIsModalOpen(false);
+                    }}
                     style={{
                       padding: '10px 18px',
                       borderRadius: '50px',
