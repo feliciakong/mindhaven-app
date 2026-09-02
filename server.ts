@@ -211,7 +211,10 @@ Keep each prompt under 25 words.`;
 
 // Serve frontend in development or production
 async function setupServer() {
+  const distPath = path.join(process.cwd(), 'dist');
+
   if (process.env.NODE_ENV !== 'production') {
+    // Development mode: Vite dev server middleware
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -219,22 +222,15 @@ async function setupServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    // Production mode: Serve built static assets
+    app.use('/assets', express.static(path.join(distPath, 'assets')));
     app.use(express.static(distPath));
+
     app.get('*', (req, res) => {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
-
-const __dirname = path.resolve();
-
-// Serve static assets from Vite's build output
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Fallback all non-API requests to index.html for React router
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
 
   app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`MindHaven server running on ${PORT}`);
