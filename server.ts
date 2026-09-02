@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { GoogleGenAI, Type } from '@google/genai';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -226,8 +226,8 @@ async function setupServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`MindHaven server listening on http://0.0.0.0:${PORT}`);
+  app.listen(Number(PORT), '0.0.0.0', () => {
+    console.log(`MindHaven server running on ${PORT}`);
   });
 }
 
