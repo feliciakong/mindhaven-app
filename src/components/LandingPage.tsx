@@ -9,7 +9,7 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, authError }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/20 to-emerald-50/30 dark:from-stone-950 dark:via-stone-900 dark:to-emerald-950/20 text-stone-800 dark:text-stone-900 flex flex-col justify-between transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/20 to-emerald-50/30 dark:from-[#fcfbf7] dark:via-stone-900 dark:to-emerald-950/20 text-stone-800 dark:text-stone-900 flex flex-col justify-between transition-colors duration-300">
       {/* Header Bar */}
       <header className="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -20,7 +20,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
             <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
               MindHaven
             </h1>
-            <p className="text-xs text-stone-500 dark:text-stone-400 font-sans">
+            <p className="text-xs text-stone-500 dark:text-stone-600 font-sans">
               Personal AI Reflection Sanctuary
             </p>
           </div>
@@ -54,7 +54,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
           A quiet space for your thoughts, guided by intuitive AI.
         </h2>
 
-        <p className="mt-6 text-lg sm:text-xl text-stone-600 dark:text-stone-300 max-w-2xl font-normal leading-relaxed">
+        <p className="mt-6 text-lg sm:text-xl text-stone-600 dark:text-stone-700 max-w-2xl font-normal leading-relaxed">
           MindHaven combines continuous Socratic reflection with private cloud storage, transforming daily thoughts into meaningful self-discoveries and actionable clarity.
         </p>
 
@@ -96,46 +96,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn, isLoading, a
 
         {/* Feature Cards Grid */}
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left w-full">
-          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-200 backdrop-blur-md shadow-xs">
             <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-4">
               <Brain className="w-5 h-5" />
             </div>
             <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-900 mb-2">
               Socratic Guidance
             </h3>
-            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-600 text-sm leading-relaxed">
               Multi-turn conversations powered by Gemini 3.6 Flash that ask gentle questions to help you unlock deeper self-awareness.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-200 backdrop-blur-md shadow-xs">
             <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 flex items-center justify-center mb-4">
               <Compass className="w-5 h-5" />
             </div>
             <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-900 mb-2">
               Instant Session Insights
             </h3>
-            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-600 text-sm leading-relaxed">
               Transform continuous reflection threads into structured key realizations, mood trends, and actionable takeaways.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md shadow-xs">
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-stone-100/60 border border-stone-200/80 dark:border-stone-200 backdrop-blur-md shadow-xs">
             <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-400 flex items-center justify-center mb-4">
               <Shield className="w-5 h-5" />
             </div>
             <h3 className="font-serif text-lg font-semibold text-stone-900 dark:text-stone-900 mb-2">
               Isolated Firestore Storage
             </h3>
-            <p className="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
-              Your journals are isolated strictly under <code className="text-xs bg-stone-100 dark:bg-stone-800 px-1 py-0.5 rounded">/users/{'{userId}'}/...</code> with auth-enforced rules.
+            <p className="text-stone-600 dark:text-stone-600 text-sm leading-relaxed">
+              Your journals are isolated strictly under <code className="text-xs bg-stone-100 dark:bg-[#f0ebe1] px-1 py-0.5 rounded">/users/{'{userId}'}/...</code> with auth-enforced rules.
             </p>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-stone-200/60 dark:border-stone-800 py-6 text-center text-xs text-stone-500 dark:text-stone-400">
+      <footer className="w-full border-t border-stone-200/60 dark:border-stone-200 py-6 text-center text-xs text-stone-500 dark:text-stone-600">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Lock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />

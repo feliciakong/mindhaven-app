@@ -7,3 +7,9 @@ html, body {
   background-color: #FBF9F5 !important;
   color: #1c1917 !important;
 }
+
+/* Force warm stone/cream background globally */
+html, body, #root {
+  background-color: #fcfbf7 !important;
+  color: #1c1917 !important;
+}
