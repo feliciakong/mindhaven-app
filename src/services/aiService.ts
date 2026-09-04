@@ -1,21 +1,18 @@
-import { sanitizePII } from '../utils/piiSanitizer';
-
 export interface AIAnalysisResult {
   insight: string;
   detectedMood: string;
-  suggestedTitle?: string;
+  suggestedTitle: string;
+  keyTakeaways: string[];
+  reflectionPrompt: string;
 }
 
 export async function analyzeReflection(rawText: string): Promise<AIAnalysisResult> {
   const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
-  const sanitizedText = sanitizePII(rawText);
+  const sanitizedText = rawText; 
 
   if (!apiKey) {
-    return {
-      insight: "Take a gentle breath and acknowledge the feelings you've captured here today.",
-      detectedMood: "Reflective",
-      suggestedTitle: "Personal Reflection"
-    };
+    console.error("Missing VITE_GEMINI_API_KEY environment variable.");
+    return getFallbackResult();
   }
 
   try {
@@ -27,51 +24,63 @@ export async function analyzeReflection(rawText: string): Promise<AIAnalysisResu
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `You are an empathetic, highly perceptive personal reflection guide. 
-Analyze this user journal entry deeply and specifically:
-"${sanitizedText}"
-
-Provide:
-1. A highly tailored, unique, 2-3 sentence psychological or mindful insight that speaks directly to the specific technical tasks, struggles, or breakthroughs mentioned in the text (avoid generic boilerplate).
-2. An accurate mood chosen strictly from ONE of these exact options: Reflective, Calm, Grateful, Anxious, Inspired, Overwhelmed. (If the user describes a stressful technical crisis or troubleshooting hurdle, lean toward Overwhelmed or Anxious rather than a generic tag).
-3. A concise 3-5 word title summarizing the entry.
-
-You must respond strictly in JSON format with this exact structure:
-{
-  "insight": "your custom tailored insight here",
-  "detectedMood": "one of the allowed moods",
-  "suggestedTitle": "concise title"
-}`
+              text: `Analyze this user journal entry and respond strictly in JSON matching the schema. Entry: "${sanitizedText}"`
             }]
           }],
           generationConfig: {
-            responseMimeType: "application/json"
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                insight: { type: "STRING" },
+                detectedMood: { type: "STRING" },
+                suggestedTitle: { type: "STRING" },
+                keyTakeaways: {
+                  type: "ARRAY",
+                  items: { type: "STRING" }
+                },
+                reflectionPrompt: { type: "STRING" }
+              },
+              required: ["insight", "detectedMood", "suggestedTitle", "keyTakeaways", "reflectionPrompt"]
+            }
           }
         })
       }
     );
 
     const data = await response.json();
-    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
+    if (!response.ok) {
+      console.error("Gemini API Full Error Response:", data);
+      return getFallbackResult();
+    }
+
+    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!candidateText) {
-      throw new Error("No response text received from Gemini API");
+      console.error("No response text received from Gemini API candidates.");
+      return getFallbackResult();
     }
 
     const result = JSON.parse(candidateText);
     return {
-      insight: result.insight || "Take a moment to appreciate the depth of your reflection today.",
-      detectedMood: ["Reflective", "Calm", "Grateful", "Anxious", "Inspired", "Overwhelmed"].includes(result.detectedMood) 
-        ? result.detectedMood 
-        : "Reflective",
-      suggestedTitle: result.suggestedTitle || "Personal Reflection"
+      insight: result.insight || "Every step forward counts.",
+      detectedMood: result.detectedMood || "Reflective",
+      suggestedTitle: result.suggestedTitle || "Personal Reflection",
+      keyTakeaways: Array.isArray(result.keyTakeaways) ? result.keyTakeaways : ["Recorded entry successfully."],
+      reflectionPrompt: result.reflectionPrompt || "How can you take care of yourself next?"
     };
   } catch (error) {
-    console.error('Gemini API Error details:', error);
-    return {
-      insight: "Every hurdle overcome is another step forward in your journey. Allow yourself space to rest and process.",
-      detectedMood: "Reflective",
-      suggestedTitle: "Personal Reflection"
-    };
+    console.error('Gemini API Exception:', error);
+    return getFallbackResult();
   }
+}
+
+function getFallbackResult(): AIAnalysisResult {
+  return {
+    insight: "Take a gentle breath and acknowledge the feelings you've captured here today.",
+    detectedMood: "Reflective",
+    suggestedTitle: "Personal Reflection",
+    keyTakeaways: ["Recorded journal entry successfully."],
+    reflectionPrompt: "What is one small step you can take next?"
+  };
 }
